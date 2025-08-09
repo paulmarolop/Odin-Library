@@ -116,14 +116,54 @@ function displayBooks(){
     }
 }
 
-let form = document.getElementById('form');
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    let title = document.getElementById('title');
-    let author = document.getElementById('author');
-    let pages = document.getElementById('pages');
-    let read = document.getElementById('read');
-    addBookToLibrary(title.value, author.value, pages.value, read.checked);
+// Form validation and submission
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('#form form');
+    const titleInput = document.getElementById('title');
+    const authorInput = document.getElementById('author');
+    const pagesInput = document.getElementById('pages');
+    const readInput = document.getElementById('read');
+
+    form.addEventListener('submit', function(event) {
+        // Remove previous error styles/messages
+        [titleInput, authorInput, pagesInput].forEach(input => {
+            input.classList.remove('input-error');
+        });
+
+        let valid = true;
+
+        // Title validation
+        if (titleInput.value.trim() === '') {
+            titleInput.classList.add('input-error');
+            valid = false;
+        }
+
+        // Author validation
+        if (authorInput.value.trim() === '' || !/^[a-zA-Z\s]+$/.test(authorInput.value.trim()))
+            {
+              authorInput.classList.add('input-error');
+              valid = false;
+        }
+
+        // Pages validation
+        if (pagesInput.value.trim() === '' || isNaN(pagesInput.value) || Number(pagesInput.value) < 1) {
+            pagesInput.classList.add('input-error');
+            valid = false;
+        }
+
+        if (!valid) {
+            event.preventDefault();
+            alert('Please fill out all fields correctly.');
+            return;
+        }
+
+        // If valid, add book and reset form
+        event.preventDefault();
+        addBookToLibrary(titleInput.value, authorInput.value, pagesInput.value, readInput.checked);
+        displayBooks();
+        form.reset();
+    });
+
+    // Initial display
     displayBooks();
-    form.reset();
 });
